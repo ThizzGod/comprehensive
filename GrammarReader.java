@@ -2,18 +2,33 @@ package comprehensive;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+/**
+ * Reads a grammar file and helps create random phrases.
+ * This handles non terminals like object and terminals like words.
+ * 
+ * @author Max Barker & Josi Gac
+ * @version 12/2/25
+ */
 public class GrammarReader {
-	public GrammarReader() {
-
-	}
 	
+	/**
+	 * Default constructor.
+	 */
+	public GrammarReader() {}
+	
+	
+	/**
+	 * Builds a map of all non terminals in the grammar.
+	 * 
+	 * @param filePath filePath path to the grammar file
+	 * @return a map where the key is a non terminal and the value is its list of options
+	 */
 	public static HashMap<String, ArrayList<String>> buildGrammarMap(String filePath) {
 		BufferedReader buff;
 		HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
@@ -38,6 +53,13 @@ public class GrammarReader {
 	return map;	
 	}
 	
+	/**
+	 * Recursively creates a random phrase by replacing non terminals.
+	 * 
+	 * @param phrase the current phrase
+	 * @param grammarMap map of all non terminals and their options
+	 * @return a fully written random phrase
+	 */
 	public static String createNewPhrase(String phrase, HashMap<String, ArrayList<String>> grammarMap) {
 		Random rng = new Random();
 		StringBuilder phraseBuilder = new StringBuilder();
@@ -66,5 +88,4 @@ public class GrammarReader {
 		//basecase for the recursive method. When a string with no non-terminals is read this will run
 		return phraseBuilder.toString();
 	}
-	
 }
