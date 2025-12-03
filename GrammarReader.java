@@ -14,31 +14,11 @@ public class GrammarReader {
 
 	}
 	
-	public static String getPhrase(String filePath) {
-		BufferedReader buff;
-		StringBuilder builder = new StringBuilder();
-		try {
-			buff = new BufferedReader(new FileReader(new File(filePath)));
-			while (!buff.readLine().equals("{")) {
-				;
-			}
-			while (!buff.readLine().equals("}")) {
-				builder.append(buff.readLine());
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return builder.toString();
-	}
-	
 	public static HashMap<String, ArrayList<String>> buildGrammarMap(String filePath) {
 		BufferedReader buff;
 		HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
 		try {
 			buff = new BufferedReader(new FileReader(new File(filePath)));
-			while (!buff.readLine().equals("}")) {
-				;
-			}
 			while (buff.readLine() != null) {
 				while (!buff.readLine().equals("{")) {
 					;
@@ -62,21 +42,28 @@ public class GrammarReader {
 		Random rng = new Random();
 		StringBuilder phraseBuilder = new StringBuilder();
 		for (int j = 0; j < phrase.length(); j++) {
+			//read and write characters until an open angle bracket is reached
 			if (phrase.charAt(j) != '<') {
 				phraseBuilder.append(phrase.charAt(j));
 			} else {
+				//read the nonterminal and write to key
 				StringBuilder keyBuilder = new StringBuilder();
 				while (phrase.charAt(j) != '>') {
 					keyBuilder.append(phrase.charAt(j));
 					j++;
 				}
 				keyBuilder.append('>');
+				//use key to get list of child-words
 				ArrayList<String> wordList = grammarMap.get(keyBuilder.toString());
+				//select a random word from the list and recursively call this method
 				String word = wordList.get(rng.nextInt(wordList.size()));
+				//if the child word contains another nonterminal it will be terminated and so on
 				String newPhrase = createNewPhrase(word, grammarMap);
+				//once a phrase of all terminals is reached it will be returned and appended
 				phraseBuilder.append(newPhrase);
 			}
 		}
+		//basecase for the recursive method. When a string with no non-terminals is read this will run
 		return phraseBuilder.toString();
 	}
 	
