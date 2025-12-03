@@ -34,22 +34,28 @@ public class GrammarReader {
 		HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
 		try {
 			buff = new BufferedReader(new FileReader(new File(filePath)));
-			while (buff.readLine() != null) {
-				while (!buff.readLine().equals("{")) {
-					;
+			String line = buff.readLine();
+			while (line != null) {
+				while (line != null && !line.equals("{")) {
+					line = buff.readLine();
+				}
+				if (line == null) {
+					break;
 				}
 				String key = buff.readLine();
+				line = buff.readLine();
 				map.put(key, new ArrayList<String>());
-				String line = buff.readLine();
 				while (!line.equals("}")) {
 					map.get(key).add(line);
 					line = buff.readLine();
 				}
+				line = buff.readLine();
 			}
+			
+			buff.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	return map;	
 	}
 	
