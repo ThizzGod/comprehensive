@@ -17,6 +17,8 @@ import java.util.Random;
  */
 public class GrammarReader {
 	
+	private static final Random RNG = new Random();
+	
 	/**
 	 * Default constructor.
 	 */
@@ -60,38 +62,46 @@ public class GrammarReader {
 	}
 	
 	/**
-	 * Recursively creates a random phrase by replacing non terminals.
+     * Generates a random phrase by expanding all non terminals in the input phrase.
+     * This version uses an iterative approach with a stack.
 	 * 
 	 * @param phrase the current phrase
 	 * @param grammarMap map of all non terminals and their options
 	 * @return a fully written random phrase
 	 */
 	public static String createNewPhrase(String phrase, HashMap<String, ArrayList<String>> grammarMap) {
-		Random rng = new Random();
 		StringBuilder phraseBuilder = new StringBuilder();
-		for (int j = 0; j < phrase.length(); j++) {
-			//read and write characters until an open angle bracket is reached
-			if (phrase.charAt(j) != '<') {
-				phraseBuilder.append(phrase.charAt(j));
-			} else {
-				//read the nonterminal and write to key
-				StringBuilder keyBuilder = new StringBuilder();
-				while (phrase.charAt(j) != '>') {
-					keyBuilder.append(phrase.charAt(j));
-					j++;
-				}
-				keyBuilder.append('>');
-				//use key to get list of child-words
-				ArrayList<String> wordList = grammarMap.get(keyBuilder.toString());
-				//select a random word from the list and recursively call this method
-				String word = wordList.get(rng.nextInt(wordList.size()));
-				//if the child word contains another nonterminal it will be terminated and so on
-				String newPhrase = createNewPhrase(word, grammarMap);
-				//once a phrase of all terminals is reached it will be returned and appended
-				phraseBuilder.append(newPhrase);
-			}
-		}
-		//basecase for the recursive method. When a string with no non-terminals is read this will run
-		return phraseBuilder.toString();
-	}
+	    ArrayList<String> stack = new ArrayList<>();
+	    stack.add(phrase);
+
+	    while (!stack.isEmpty()) {
+	        String current = stack.remove(stack.size() - 1); 
+	        int i = 0;
+	        int phraseLength = current.length();
+	        boolean replaced = false;
+	        while (i < phraseLength) {
+	            char character = current.charAt(i);
+	            if (character != '<') {
+	                phraseBuilder.append(character);
+	                i++;
+	                continue;
+	            }
+	            int end = current.indexOf('>', i);
+	            String key = current.substring(i, end + 1);
+	            ArrayList<String> options = grammarMap.get(key);
+	            String replacement = options.get(RNG.nextInt(options.size()));
+
+	            if (end + 1 < phraseLength) {
+	                stack.add(current.substring(end + 1));
+	            }
+	            stack.add(replacement);
+	            replaced = true;
+	            break;
+	        }
+	        if (!replaced) {
+	            continue;
+	        }
+	    }
+	    return phraseBuilder.toString();
+    }
 }
